@@ -8,7 +8,11 @@ from app.api.schemas import (
     GenerateResponse,
     StatusResponse,
 )
+from app.db.crud import create_task
+from app.utils.hashing import text_hash
+from fastapi import HTTPException
 
+from app.db.crud import get_task
 router = APIRouter(
     prefix="/api",
     tags=["Avatar"],
@@ -20,14 +24,24 @@ def generate(request: GenerateRequest):
 
     task = generate_avatar.delay(request.text)
 
+    create_task(
+        task.id,
+        text_hash(request.text),
+    )
+
     return GenerateResponse(
         task_id=task.id,
     )
-
 @router.get("/status/{task_id}", response_model=StatusResponse)
 def status(task_id: str):
 
-    task = AsyncResult(task_id, app=celery_app)
+    task = get_task(task_id)
+
+    if task is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Task not found",
+        )
 
     return StatusResponse(
         task_id=task.id,
