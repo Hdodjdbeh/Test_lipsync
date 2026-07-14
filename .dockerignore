@@ -1,0 +1,13 @@
+.git
+
+.venv
+
+__pycache__
+
+*.pyc
+
+results
+
+temp/audio
+
+avatar.db

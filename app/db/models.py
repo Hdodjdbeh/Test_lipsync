@@ -1,12 +1,7 @@
-from datetime import datetime
 from enum import Enum
 
-from sqlalchemy import DateTime
 from sqlalchemy import Enum as SqlEnum
-from sqlalchemy import String
-
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
+from sqlalchemy import String, Column, Text
 
 from app.db.database import Base
 
@@ -19,28 +14,35 @@ class TaskStatus(str, Enum):
 
 
 class Task(Base):
+    def __repr__(self):
+        return (
+            f"Task("
+            f"id={self.id}, "
+            f"status={self.status}"
+            f")"
+        )
     __tablename__ = "tasks"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True)
+    id = Column(String(36), primary_key=True)
 
-    text_hash: Mapped[str] = mapped_column(String)
+    text_hash = Column(
+        String(64),
+        nullable=False,
+        index=True,
+    )
 
-    status: Mapped[TaskStatus] = mapped_column(
+    status = Column(
         SqlEnum(TaskStatus),
+        nullable=False,
         default=TaskStatus.PENDING,
     )
 
-    video_path: Mapped[str | None] = mapped_column(
+    video_path = Column(
         String,
         nullable=True,
     )
 
-    error: Mapped[str | None] = mapped_column(
-        String,
+    error = Column(
+        Text,
         nullable=True,
-    )
-
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.utcnow,
     )

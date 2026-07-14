@@ -1,6 +1,5 @@
 from pydantic import BaseModel, Field
 
-
 class GenerateRequest(BaseModel):
     text: str = Field(
         ...,
@@ -17,3 +16,8 @@ class GenerateResponse(BaseModel):
 class StatusResponse(BaseModel):
     task_id: str
     status: str
+
+class ResultResponse(BaseModel):
+    task_id: str
+    status: str
+    download_url: str | None = None
